@@ -28,17 +28,20 @@ fun commissionCalculate(cardType: String = "Мир", sum: Int = 0, transfer: Int
 
     val fail = -1 //значение ошибки операции
 
-    if (transfer > maxDay || sum + transfer > maxMonth) {
+    if (transfer > maxDay || sum + transfer > maxMonth || transfer <= 0) {
         return fail
     }
 
     return when (cardType) {
         "Мир" -> 0
         "Visa" -> max(visaMinCommission, transfer * visaCommission / 10_000)
-        "Mastercard" -> if (transfer < masterCardMinLimit) {
-            0
-        } else {
-            (transfer - masterCardMinLimit) * masterCardCommission / 10_000 + masterCardPlusCommission
+        "Mastercard" -> when {
+            // льготный порог не превышается (комиссия не взимается)
+            sum + transfer <= masterCardMinLimit -> 0
+            //льготный порог превышен ранее (комиссия взимается только с текущего платежа)
+            sum >= masterCardMinLimit -> transfer * masterCardCommission / 10_000 + masterCardPlusCommission
+            //льготный порог превышается текущим платежом (комиссия взимается с суммы превышения)
+            else -> (sum + transfer - masterCardMinLimit) * masterCardCommission / 10_000 + masterCardPlusCommission
         }
 
         else -> fail
