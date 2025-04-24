@@ -104,7 +104,8 @@ class MainTest {
         val sum = 35_000
         val transfer = 140_000
         val result = commissionCalculate(cardType, sum, transfer)
-        assertEquals("Несуществующий тип карты",-1, result)
+        //проверяем срабатывание GitHub Actions, должно быть -1
+        assertEquals("Несуществующий тип карты",100, result)
     }
 
 
